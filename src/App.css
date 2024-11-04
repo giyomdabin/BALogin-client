@@ -1,7 +1,19 @@
 .App {
-  text-align: center;
-  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column; /* 수직 배치 */
+  align-items: center; /* 중앙 정렬 */
+  justify-content: center; /* 수직 중앙 정렬 */
+  transition: transform 0.5s ease-in-out;
+}
+
+.content-container.logo-up {
+  transform: translateY(-10px); /* 로고가 살짝 위로 이동 */
 }
