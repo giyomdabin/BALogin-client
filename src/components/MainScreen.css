@@ -1,0 +1,11 @@
+.main-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    transition: transform 0.5s ease-in-out;
+}
+
+.main-screen.animate-up {
+    transform: translateY(-50vh);
+}
