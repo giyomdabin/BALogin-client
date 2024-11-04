@@ -39,9 +39,15 @@
 .cancel-button {
     flex: 1;
     padding: 10px;
-    background-color: #666;
+    background-color: #9f9f9f;
     border: none;
     color: white;
     font-weight: bold;
     cursor: pointer;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
 }
