@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './LoginScreen.css';
 
-function LoginScreen({ onSwitchToSignUp, onLoginSuccess }) {
+function LoginScreen({ onSwitchToSignUp, onLoginSuccess, onGuestLogin }) {
     const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [isBeaconLoggingIn, setIsBeaconLoggingIn] = useState(false);
+    const [intervalId, setIntervalId] = useState(null);
 
     const handleLogin = async () => {
         try {
-            const response = await fetch('http://localhost:8080/login', {
+            const response = await fetch('http://localhost:8081/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -33,6 +35,37 @@ function LoginScreen({ onSwitchToSignUp, onLoginSuccess }) {
         }
     };
 
+    const startBeaconLogin = () => {
+        setIsBeaconLoggingIn(true);
+        const id = setInterval(async () => {
+            try {
+                // GET 요청으로 `/beacon-login`에 userId를 쿼리로 포함하여 전송
+                const response = await fetch(`http://localhost:8081/beacon-login`, {
+                    method: 'GET',
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        clearInterval(id); // 비콘 로그인 성공 시 요청 중지
+                        setIsBeaconLoggingIn(false);
+                        onLoginSuccess(); // 로그인 성공 시 홈 화면으로 이동
+                    }
+                } else {
+                    console.error('비콘 로그인 실패');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }, 1000); // 1초마다 요청
+        setIntervalId(id);
+    };
+
+    useEffect(() => {
+        // 컴포넌트 언마운트 시 인터벌을 정리
+        return () => clearInterval(intervalId);
+    }, [intervalId]);
+
     return (
         <div className="login-screen">
             <div className="login-container">
@@ -51,7 +84,18 @@ function LoginScreen({ onSwitchToSignUp, onLoginSuccess }) {
                     onChange={(e) => setPassword(e.target.value)}
                 />
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
-                <button className="login-button" onClick={handleLogin}>로그인</button>
+                
+                <div className="button-container">
+                    <button className="login-button" onClick={handleLogin}>로그인</button>
+                    <button
+                        className="guest-login-button"
+                        onClick={startBeaconLogin}
+                        disabled={isBeaconLoggingIn} // 비콘 로그인 중일 때 버튼 비활성화
+                    >
+                        비콘 로그인
+                    </button>
+                </div>
+
                 <p className="signup-text" onClick={onSwitchToSignUp}>
                     아직 회원이 아니신가요? 회원가입
                 </p>

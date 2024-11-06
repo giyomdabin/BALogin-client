@@ -16,7 +16,7 @@ function SignUpScreen({ onSwitchToLogin }) {
         } else {
             setErrorMessage(''); // 오류 메시지 초기화
             try {
-                const response = await fetch('http://localhost:8080/signup', {
+                const response = await fetch('http://localhost:8081/signup', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
